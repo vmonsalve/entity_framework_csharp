@@ -1,4 +1,7 @@
+using ENTITY_FRAMEWORK_EXAMPLE.DTOs;
 using ENTITY_FRAMEWORK_EXAMPLE.Models;
+using ENTITY_FRAMEWORK_EXAMPLE.Validators;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,9 +18,15 @@ builder.Services.AddDbContext<StoreContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConection"));
 });
 
+//Validators
+builder.Services.AddScoped<IValidator<BeerInsertDto>, BeerInsertValidator>();
+builder.Services.AddScoped<IValidator<BeerUpdateDto>, BeerUpdateValidator>();
+builder.Services.AddScoped<IValidator<BrandInsertDto>, BrandInsertValidator>();
+builder.Services.AddScoped<IValidator<BrandUpdateDto>, BrandUpdateValidator>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline.   
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -167,3 +167,4 @@
 /Users/vmonsalve/Proyectos/csharp/ENTITY_FRAMEWORK_EXAMPLE/obj/Debug/net8.0/ENTITY_FRAMEWORK_EXAMPLE.pdb
 /Users/vmonsalve/Proyectos/csharp/ENTITY_FRAMEWORK_EXAMPLE/obj/Debug/net8.0/ENTITY_FRAMEWORK_EXAMPLE.genruntimeconfig.cache
 /Users/vmonsalve/Proyectos/csharp/ENTITY_FRAMEWORK_EXAMPLE/obj/Debug/net8.0/ref/ENTITY_FRAMEWORK_EXAMPLE.dll
+/Users/vmonsalve/Proyectos/csharp/ENTITY_FRAMEWORK_EXAMPLE/bin/Debug/net8.0/FluentValidation.dll

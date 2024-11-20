@@ -1,5 +1,6 @@
 using ENTITY_FRAMEWORK_EXAMPLE.DTOs;
 using ENTITY_FRAMEWORK_EXAMPLE.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +12,18 @@ namespace ENTITY_FRAMEWORK_EXAMPLE.Controllers
     public class BeerController : ControllerBase
     {
         private StoreContext _context;
+        private IValidator<BeerInsertDto> _beerInsertValidator;
+        private IValidator<BeerUpdateDto> _beerUpdateValidator;
 
-        public BeerController(StoreContext context){
+        public BeerController(
+            StoreContext context, 
+            IValidator<BeerInsertDto> beerInsertValidator,
+            IValidator<BeerUpdateDto> beerUpdateValidator
+            )
+        {
             _context = context;
+            _beerInsertValidator = beerInsertValidator;
+            _beerUpdateValidator = beerUpdateValidator;
         }
 
         [HttpGet]
@@ -43,6 +53,12 @@ namespace ENTITY_FRAMEWORK_EXAMPLE.Controllers
         [HttpPost]
         public async Task<ActionResult<BeerDto>> Add(BeerInsertDto beerInsertDto)
         {
+            var validationResult = await _beerInsertValidator.ValidateAsync(beerInsertDto);
+
+            if (!validationResult.IsValid){
+                return BadRequest(validationResult.Errors); 
+            }
+
             var beer = new Beer{
                 Nombre = beerInsertDto.Nombre,
                 BrandID = beerInsertDto.BrandID,    
@@ -64,11 +80,12 @@ namespace ENTITY_FRAMEWORK_EXAMPLE.Controllers
 
         [HttpPut("{id}")]
         public async Task<ActionResult<BeerDto>> Update(int id, BeerUpdateDto beerUpdateDto){
+            var validationResult = await _beerUpdateValidator.ValidateAsync(beerUpdateDto);
+            if (!validationResult.IsValid) return BadRequest(validationResult.Errors); 
+            
             var beer = await _context.Beers.FindAsync(id);
-
-            if(beer == null){
-                return NotFound();
-            }
+            if(beer == null) return NotFound();
+            
 
             beer.Nombre = beerUpdateDto.Nombre;
             beer.BrandID = beer.BrandID;
