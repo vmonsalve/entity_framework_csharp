@@ -1,5 +1,6 @@
 using ENTITY_FRAMEWORK_EXAMPLE.DTOs;
 using ENTITY_FRAMEWORK_EXAMPLE.Models;
+using ENTITY_FRAMEWORK_EXAMPLE.Services;
 using ENTITY_FRAMEWORK_EXAMPLE.Validators;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
@@ -12,98 +13,60 @@ namespace ENTITY_FRAMEWORK_EXAMPLE.Controllers
     [ApiController]
     public class BrandController : ControllerBase
     {
-        private StoreContext _context;
         private IValidator<BrandInsertDto> _brandInsertValidator;
         private IValidator<BrandUpdateDto> _brandUpdateValidator;
-
+        private ICommonService<BrandDto, BrandInsertDto, BrandUpdateDto> _brandService;
         public BrandController(
-            StoreContext context,
             IValidator<BrandInsertDto> brandInsertValidator,
-            IValidator<BrandUpdateDto> brandUpdateValidator
+            IValidator<BrandUpdateDto> brandUpdateValidator,
+            ICommonService<BrandDto, BrandInsertDto, BrandUpdateDto> brandService
+
         )
         {
-            _context = context;
             _brandInsertValidator = brandInsertValidator;
             _brandUpdateValidator = brandUpdateValidator;
+            _brandService = brandService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<BrandDto>> Get() => 
-            await _context.Brands.Select(b => new BrandDto{
-                Id = b.BrandID,
-                Nombre = b.Nombre
-            }).ToListAsync();
+            await _brandService.Get();
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BrandDto>> GetById(int id){
-
-            var brand = await _context.Brands.FindAsync(id);
-
-            if(brand==null) return NotFound();
-
-            var brandDto = new BrandDto{
-                Id = brand.BrandID,
-                Nombre = brand.Nombre
-            };
-            return Ok(brandDto);   
+        public async Task<ActionResult<BrandDto>> GetById(int id)
+        {
+            var brandDto = await _brandService.GetById(id);
+            return brandDto == null ? NotFound() : Ok(brandDto);
         }
 
         [HttpPost]
         public async Task<ActionResult<BrandDto>> Add(BrandInsertDto brandInsertDto)
         {
             var validationResult = await _brandInsertValidator.ValidateAsync(brandInsertDto);
-
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors); 
             
-            var brand = new Brand{
-                Nombre = brandInsertDto.Nombre,
-            };
+            var brandDto = await _brandService.Add(brandInsertDto);
 
-            await _context.Brands.AddAsync(brand);
-            await _context.SaveChangesAsync();
-
-            var brandDto = new BrandDto{
-                Id = brand.BrandID,
-                Nombre = brand.Nombre
-            };
-
-            return CreatedAtAction(nameof(GetById), new {id = brand.BrandID}, brandDto);
+            return CreatedAtAction(nameof(GetById), new {id = brandDto.Id}, brandDto);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<BrandDto>> Update(int id, BrandUpdateDto brandUpdateDto)
         {
-
             var validationResult = await _brandUpdateValidator.ValidateAsync(brandUpdateDto);
             if (!validationResult.IsValid)  return BadRequest(validationResult.Errors); 
 
-            var brand = await _context.Brands.FindAsync(id);
-            if (brand==null) return NotFound();
+            var brandDto = _brandService.Update(id, brandUpdateDto);
             
-            brand.Nombre = brandUpdateDto.Nombre;
-
-            await _context.SaveChangesAsync();
-
-            var brandDto = new BrandDto{
-                Id = brand.BrandID,
-                Nombre = brand.Nombre
-            };
-
-            return Ok(brandDto);
+            return brandDto == null ? NotFound() : Ok(brandDto);
         }
 
         [HttpDelete("{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<BrandDto>> Delete(int id)
         {
-            var brand = await _context.Brands.FindAsync(id);
-
-            if (brand == null) return NotFound();
-
-            _context.Brands.Remove(brand);
-            await _context.SaveChangesAsync();
-
-           return Ok();
+            var brandDto = await _brandService.Delete(id);
+            return brandDto == null ? NotFound() : Ok(brandDto);
         }
     }
 }
