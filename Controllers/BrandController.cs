@@ -1,11 +1,7 @@
 using ENTITY_FRAMEWORK_EXAMPLE.DTOs;
-using ENTITY_FRAMEWORK_EXAMPLE.Models;
 using ENTITY_FRAMEWORK_EXAMPLE.Services;
-using ENTITY_FRAMEWORK_EXAMPLE.Validators;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ENTITY_FRAMEWORK_EXAMPLE.Controllers
 {
@@ -16,12 +12,10 @@ namespace ENTITY_FRAMEWORK_EXAMPLE.Controllers
         private IValidator<BrandInsertDto> _brandInsertValidator;
         private IValidator<BrandUpdateDto> _brandUpdateValidator;
         private ICommonService<BrandDto, BrandInsertDto, BrandUpdateDto> _brandService;
-        public BrandController(
-            IValidator<BrandInsertDto> brandInsertValidator,
-            IValidator<BrandUpdateDto> brandUpdateValidator,
-            ICommonService<BrandDto, BrandInsertDto, BrandUpdateDto> brandService
 
-        )
+        public BrandController(IValidator<BrandInsertDto> brandInsertValidator,
+            IValidator<BrandUpdateDto> brandUpdateValidator,
+            ICommonService<BrandDto, BrandInsertDto, BrandUpdateDto> brandService)
         {
             _brandInsertValidator = brandInsertValidator;
             _brandUpdateValidator = brandUpdateValidator;

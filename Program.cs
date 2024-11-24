@@ -19,16 +19,14 @@ builder.Services.AddDbContext<StoreContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConection"));
 });
 
-builder.Services.AddKeyedScoped<ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>>("beerService");
-builder.Services.AddKeyedScoped<ICommonService<BrandDto, BrandInsertDto, BrandUpdateDto>>("brandService");
+builder.Services.AddScoped<ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>, BeerService>();
+builder.Services.AddScoped<ICommonService<BrandDto, BrandInsertDto, BrandUpdateDto>, BrandService>();
 
 //Add Validators
 builder.Services.AddScoped<IValidator<BeerInsertDto>, BeerInsertValidator>();
 builder.Services.AddScoped<IValidator<BeerUpdateDto>, BeerUpdateValidator>();
 builder.Services.AddScoped<IValidator<BrandInsertDto>, BrandInsertValidator>();
 builder.Services.AddScoped<IValidator<BrandUpdateDto>, BrandUpdateValidator>();
-
-    
 
 var app = builder.Build();
 
