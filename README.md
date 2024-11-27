@@ -72,8 +72,17 @@ Aquí lo importante es aplication url, esto nos permitira tener configurado una 
 En este archivo de momento configuraremos nuestra conección a la base de datos.
 
 ```json
-"ConnectionStrings" : {
-    "StoreConection" : "Server=localhost,1433;Database=Store;User Id=sa;Password=ru_password;Encrypt=True;TrustServerCertificate=True;"
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings" : {
+    "StoreConection" : "Server=localhost,1433;Database=tu_dba;User Id=sa;Password=tu_password;Encrypt=True;TrustServerCertificate=True;"
+  }
 }
 ```
 
