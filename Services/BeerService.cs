@@ -1,82 +1,57 @@
 using System;
+using AutoMapper;
 using ENTITY_FRAMEWORK_EXAMPLE.DTOs;
 using ENTITY_FRAMEWORK_EXAMPLE.Models;
+using ENTITY_FRAMEWORK_EXAMPLE.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace ENTITY_FRAMEWORK_EXAMPLE.Services;
 
 public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
 {
-    private StoreContext _context;
-    public BeerService(StoreContext context)
+    private IRepository<Beer> _beerRepository;
+    private IMapper _mapper;
+    public BeerService(IRepository<Beer> beerRepository,
+    IMapper mapper)
     {
-        _context = context;
+        _beerRepository = beerRepository;
+        _mapper = mapper;
     }
-    public async Task<IEnumerable<BeerDto>> Get() => 
-        await _context.Beers.Select(b => new BeerDto{
-            Id = b.BeerID,
-            Nombre = b.Nombre,
-            Alcohol = b.Alcohol,
-            BrandID = b.BrandID
-        }).ToListAsync();
+    public async Task<IEnumerable<BeerDto>> Get()
+    {
+        var beers = await _beerRepository.Get();
+        return beers.Select(b => _mapper.Map<BeerDto>(b));
+    }
 
     public async Task<BeerDto> GetById(int id)
     {
-        var beer = await _context.Beers.FindAsync(id);
-        if (beer != null)
-        {
-            var beerDto = new BeerDto{
-                Id = beer.BeerID,
-                Nombre = beer.Nombre,
-                BrandID = beer.BrandID,
-                Alcohol = beer.Alcohol 
-
-            };
-            return beerDto;
-        }
+        var beer = await _beerRepository.GetById(id);
+        if (beer != null) return _mapper.Map<BeerDto>(beer);
         return null;
-        
     }
 
     public async Task<BeerDto> Add(BeerInsertDto beerInsertDto)
     {
-        var beer = new Beer{
-            Nombre = beerInsertDto.Nombre,
-            BrandID = beerInsertDto.BrandID,    
-            Alcohol = beerInsertDto.Alcohol
-        };
+        var beer = _mapper.Map<Beer>(beerInsertDto);
 
-        await _context.Beers.AddAsync(beer);
-        await _context.SaveChangesAsync();
+        await _beerRepository.Add(beer);
+        await _beerRepository.Save();
 
-        var  beerDto = new BeerDto{
-            Id = beer.BeerID,
-            Nombre = beer.Nombre,
-            BrandID = beer.BrandID,
-            Alcohol = beer.Alcohol
-        };
-
+        var  beerDto = _mapper.Map<BeerDto>(beer);
         return beerDto;
     }
 
     public async Task<BeerDto> Update(int id, BeerUpdateDto beerUpdateDto)
     {
-        var beer = await _context.Beers.FindAsync(id);
+        var beer = await _beerRepository.GetById(id);
         
         if (beer != null){
-            beer.Nombre = beerUpdateDto.Nombre;
-            beer.BrandID = beer.BrandID;
-            beer.Alcohol = beerUpdateDto.Alcohol;
+            beer = _mapper.Map<BeerUpdateDto, Beer>(beerUpdateDto, beer);
 
-            await _context.SaveChangesAsync();
+            _beerRepository.Update(beer);
+            await _beerRepository.Save();
 
-            var  beerDto = new BeerDto{
-                Id = beer.BeerID,
-                Nombre = beer.Nombre,
-                BrandID = beer.BrandID,
-                Alcohol = beer.Alcohol
-            };
-
+            var  beerDto =  _mapper.Map<BeerDto>(beer);
             return beerDto;
         }
 
@@ -86,19 +61,14 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
     public async Task<BeerDto> Delete(int id)
     {
 
-        var beer = await _context.Beers.FindAsync(id);
+        var beer = await _beerRepository.GetById(id);
 
         if (beer != null){
 
-            var  beerDto = new BeerDto{
-                Id = beer.BeerID,
-                Nombre = beer.Nombre,
-                BrandID = beer.BrandID,
-                Alcohol = beer.Alcohol
-            };
+            var  beerDto = _mapper.Map<BeerDto>(beer);
 
-            _context.Beers.Remove(beer);
-            await _context.SaveChangesAsync();
+            _beerRepository.Delete(beer);
+            await _beerRepository.Save();
 
             return beerDto;
         }

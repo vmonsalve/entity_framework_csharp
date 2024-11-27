@@ -1,73 +1,59 @@
 using System;
+using System.Reflection;
+using AutoMapper;
 using ENTITY_FRAMEWORK_EXAMPLE.DTOs;
 using ENTITY_FRAMEWORK_EXAMPLE.Models;
+using ENTITY_FRAMEWORK_EXAMPLE.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace ENTITY_FRAMEWORK_EXAMPLE.Services;
 
 public class BrandService : ICommonService<BrandDto, BrandInsertDto, BrandUpdateDto>
 {
-    private StoreContext _context;
+    private IRepository<Brand> _brandRepository;
+    private IMapper _mapper;
 
-    public BrandService(StoreContext context)
+    public BrandService(IRepository<Brand> brandRepository, IMapper mapper)
     {
-        _context = context;
+        _brandRepository = brandRepository;
+        _mapper = mapper;
     }
 
-    public async Task<IEnumerable<BrandDto>> Get()  => 
-        await _context.Brands.Select(b => new BrandDto{
-                Id = b.BrandID,
-                Nombre = b.Nombre
-        }).ToListAsync();
+    public async Task<IEnumerable<BrandDto>> Get()
+    {
+        var brands = await _brandRepository.Get();
+        return brands.Select(b => _mapper.Map<BrandDto>(b));
+    }
     
 
     public async Task<BrandDto> GetById(int id)
     {
-        var brand = await _context.Brands.FindAsync(id);
-        if (brand != null)
-        {
-            var brandDto = new BrandDto{
-                Id = brand.BrandID,
-                Nombre = brand.Nombre
-            };
-
-            return brandDto;            
-        }
+        var brand = await _brandRepository.GetById(id);
+        if (brand != null) return _mapper.Map<BrandDto>(brand);            
         return null;
     }
 
     public async Task<BrandDto> Add(BrandInsertDto brandInsertDto)
     {
-        var brand = new Brand{
-            Nombre = brandInsertDto.Nombre,
-        };
+        var brand = _mapper.Map<Brand>(brandInsertDto);
 
-        await _context.Brands.AddAsync(brand);
-        await _context.SaveChangesAsync();
+        await _brandRepository.Add(brand);
+        await _brandRepository.Save();
 
-        var brandDto = new BrandDto{
-            Id = brand.BrandID,
-            Nombre = brand.Nombre
-        };
-
-        return brandDto;
+        return  _mapper.Map<BrandDto>(brand);
     }
 
     public async Task<BrandDto> Update(int id, BrandUpdateDto brandUpdateDto)
     {
-        var brand = await _context.Brands.FindAsync(id);
+        var brand = await _brandRepository.GetById(id);
         if(brand != null)
         {
-            brand.Nombre = brandUpdateDto.Nombre;
+            _mapper.Map<BrandUpdateDto, Brand>(brandUpdateDto, brand);
 
-            await _context.SaveChangesAsync();
+            _brandRepository.Update(brand);
+            await _brandRepository.Save();
 
-            var brandDto = new BrandDto{
-                Id = brand.BrandID,
-                Nombre = brand.Nombre
-            };
-
-            return brandDto;
+            return _mapper.Map<BrandDto>(brand);
         }
 
         return null;
@@ -75,16 +61,12 @@ public class BrandService : ICommonService<BrandDto, BrandInsertDto, BrandUpdate
 
     public async Task<BrandDto> Delete(int id)
     {
-        var brand = await _context.Brands.FindAsync(id);
+        var brand = await _brandRepository.GetById(id);
         if (brand != null)
         {
-            var brandDto = new BrandDto{
-                Id = brand.BrandID,
-                Nombre = brand.Nombre
-            };
-
-            _context.Brands.Remove(brand);
-            await _context.SaveChangesAsync();
+            var brandDto =  _mapper.Map<BrandDto>(brand);
+            _brandRepository.Delete(brand);
+            await _brandRepository.Save();
 
             return brandDto;
         }

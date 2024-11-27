@@ -1,5 +1,7 @@
+using ENTITY_FRAMEWORK_EXAMPLE.Automappers;
 using ENTITY_FRAMEWORK_EXAMPLE.DTOs;
 using ENTITY_FRAMEWORK_EXAMPLE.Models;
+using ENTITY_FRAMEWORK_EXAMPLE.Repository;
 using ENTITY_FRAMEWORK_EXAMPLE.Services;
 using ENTITY_FRAMEWORK_EXAMPLE.Validators;
 using FluentValidation;
@@ -19,14 +21,22 @@ builder.Services.AddDbContext<StoreContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConection"));
 });
 
+//Repository
+builder.Services.AddScoped<IRepository<Beer>, BeerRepository>();
+builder.Services.AddScoped<IRepository<Brand>, BrandRepository>();
+
+//Services
 builder.Services.AddScoped<ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>, BeerService>();
 builder.Services.AddScoped<ICommonService<BrandDto, BrandInsertDto, BrandUpdateDto>, BrandService>();
 
-//Add Validators
+//Validators
 builder.Services.AddScoped<IValidator<BeerInsertDto>, BeerInsertValidator>();
 builder.Services.AddScoped<IValidator<BeerUpdateDto>, BeerUpdateValidator>();
 builder.Services.AddScoped<IValidator<BrandInsertDto>, BrandInsertValidator>();
 builder.Services.AddScoped<IValidator<BrandUpdateDto>, BrandUpdateValidator>();
+
+//Mappers
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

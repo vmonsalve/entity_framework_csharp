@@ -168,3 +168,6 @@
 /Users/vmonsalve/Proyectos/csharp/ENTITY_FRAMEWORK_EXAMPLE/obj/Debug/net8.0/ENTITY_FRAMEWORK_EXAMPLE.genruntimeconfig.cache
 /Users/vmonsalve/Proyectos/csharp/ENTITY_FRAMEWORK_EXAMPLE/obj/Debug/net8.0/ref/ENTITY_FRAMEWORK_EXAMPLE.dll
 /Users/vmonsalve/Proyectos/csharp/ENTITY_FRAMEWORK_EXAMPLE/bin/Debug/net8.0/FluentValidation.dll
+/Users/vmonsalve/Proyectos/csharp/ENTITY_FRAMEWORK_EXAMPLE/bin/Debug/net8.0/api_beers.postman_collection.json
+/Users/vmonsalve/Proyectos/csharp/ENTITY_FRAMEWORK_EXAMPLE/bin/Debug/net8.0/AutoMapper.dll
+/Users/vmonsalve/Proyectos/csharp/ENTITY_FRAMEWORK_EXAMPLE/bin/Debug/net8.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
