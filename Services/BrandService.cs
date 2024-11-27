@@ -20,6 +20,7 @@ public class BrandService : ICommonService<BrandDto, BrandInsertDto, BrandUpdate
     {
         _brandRepository = brandRepository;
         _mapper = mapper;
+        Errors = new List<string>();
     }
 
     public async Task<IEnumerable<BrandDto>> Get()

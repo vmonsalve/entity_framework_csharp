@@ -18,6 +18,7 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
     {
         _beerRepository = beerRepository;
         _mapper = mapper;
+        Errors = new List<string>();
     }
     public async Task<IEnumerable<BeerDto>> Get()
     {
