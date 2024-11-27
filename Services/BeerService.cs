@@ -11,6 +11,8 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
 {
     private IRepository<Beer> _beerRepository;
     private IMapper _mapper;
+    public List<string> Errors { get; }
+
     public BeerService(IRepository<Beer> beerRepository,
     IMapper mapper)
     {
@@ -74,6 +76,26 @@ public class BeerService : ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>
         }
 
         return null;
+    }
+
+    public bool Validate(BeerInsertDto beerInsertDto)
+    {
+        if (_beerRepository.Search(b => b.Nombre == beerInsertDto.Nombre).Count() > 0)
+        {
+            Errors.Add("La cerveza ya existe");
+            return false;
+        }
+        return true;
+    }
+
+    public bool Validate(BeerUpdateDto  beerUpdateDto)
+    {
+        if (_beerRepository.Search(b => b.Nombre == beerUpdateDto.Nombre && beerUpdateDto.Id == b.BeerID).Count() > 0)
+        {
+            Errors.Add("La cerveza ya existe");
+            return false;
+        }
+        return true;
     }
 
 }
