@@ -28,6 +28,8 @@ builder.Services.AddScoped<IRepository<Brand>, BrandRepository>();
 //Services
 builder.Services.AddScoped<ICommonService<BeerDto, BeerInsertDto, BeerUpdateDto>, BeerService>();
 builder.Services.AddScoped<ICommonService<BrandDto, BrandInsertDto, BrandUpdateDto>, BrandService>();
+builder.Services.AddScoped<ICommonService<RoleDto, RoleInsertDto, RoleUpdateDto>, RoleService>();
+builder.Services.AddScoped<ICommonService<UserDto, UserInsertDto, UserUpdateDto>, UserService>();
 
 //Validators
 builder.Services.AddScoped<IValidator<BeerInsertDto>, BeerInsertValidator>();
