@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Reflection;
 using AutoMapper;
 using ENTITY_FRAMEWORK_EXAMPLE.DTOs;
 using ENTITY_FRAMEWORK_EXAMPLE.Models;
 using ENTITY_FRAMEWORK_EXAMPLE.Repository;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ENTITY_FRAMEWORK_EXAMPLE.Services;
@@ -12,11 +14,13 @@ public class BrandService : ICommonService<BrandDto, BrandInsertDto, BrandUpdate
 {
     private IRepository<Brand> _brandRepository;
     private IMapper _mapper;
+    public List<string> Errors { get; }
 
     public BrandService(IRepository<Brand> brandRepository, IMapper mapper)
     {
         _brandRepository = brandRepository;
         _mapper = mapper;
+        Errors = new List<string>();
     }
 
     public async Task<IEnumerable<BrandDto>> Get()
@@ -73,5 +77,26 @@ public class BrandService : ICommonService<BrandDto, BrandInsertDto, BrandUpdate
 
         return null;
     }
+
+    public bool Validate(BrandInsertDto brandInsertDto)
+    {
+        if (_brandRepository.Search(b => b.Nombre == brandInsertDto.Nombre).Count() > 0)
+        {
+            Errors.Add("La marca ya existe");
+            return false;
+        }
+        return true;
+    }
+
+    public bool Validate(BrandUpdateDto  brandUpdateDto)
+    {
+        if (_brandRepository.Search(b => b.Nombre == brandUpdateDto.Nombre && brandUpdateDto.Id == b.BrandID).Count() > 0)
+        {
+            Errors.Add("La Marca ya existe");
+            return false;
+        }
+        return true;
+    }
+
 
 }

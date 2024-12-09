@@ -31,5 +31,6 @@ public class BrandRepository : IRepository<Brand>
     public async Task Save()
         =>  await _context.SaveChangesAsync();
     
-
+     public IEnumerable<Brand> Search(Func<Brand, bool> filter)
+        => _context.Brands.Where(filter).ToList();
 }

@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dotnet_api
+    ports:
+      - "5261:5261" # HTTP
+      - "5262:5262" # HTTPS
+    networks:
+      - app-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Store;User Id=sa;Password=P4ssW0rd;
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql_server
+    ports:
+      - "1433:1433"
+    networks:
+      - app-network
+    environment:
+      SA_PASSWORD: "P4ssW0rd"
+      ACCEPT_EULA: "Y"
+
+networks:
+  app-network:
+    driver: bridge

@@ -38,7 +38,9 @@ namespace ENTITY_FRAMEWORK_EXAMPLE.Controllers
         {
             var validationResult = await _brandInsertValidator.ValidateAsync(brandInsertDto);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors); 
-            
+
+             if(!_brandService.Validate(brandInsertDto)) return BadRequest(brandInsertDto);
+
             var brandDto = await _brandService.Add(brandInsertDto);
 
             return CreatedAtAction(nameof(GetById), new {id = brandDto.Id}, brandDto);
@@ -50,6 +52,8 @@ namespace ENTITY_FRAMEWORK_EXAMPLE.Controllers
             var validationResult = await _brandUpdateValidator.ValidateAsync(brandUpdateDto);
             if (!validationResult.IsValid)  return BadRequest(validationResult.Errors); 
 
+            if(!_brandService.Validate(brandUpdateDto)) return BadRequest(brandUpdateDto);
+            
             var brandDto = _brandService.Update(id, brandUpdateDto);
             
             return brandDto == null ? NotFound() : Ok(brandDto);

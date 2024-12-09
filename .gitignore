@@ -1,5 +1,7 @@
 .vscode/
 obj/
 bin/
+Migrations/
 appsettings.Development.json
 appsettings.json
+.fake

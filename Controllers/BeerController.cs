@@ -44,6 +44,8 @@ namespace ENTITY_FRAMEWORK_EXAMPLE.Controllers
             var validationResult = await _beerInsertValidator.ValidateAsync(beerInsertDto);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors); 
             
+            if(!_beerService.Validate(beerInsertDto)) return BadRequest(beerInsertDto);
+
             var beerDto = await _beerService.Add(beerInsertDto);
 
             return CreatedAtAction(nameof(GetById), new {id = beerDto.Id}, beerDto);
@@ -53,6 +55,8 @@ namespace ENTITY_FRAMEWORK_EXAMPLE.Controllers
         public async Task<ActionResult<BeerDto>> Update(int id, BeerUpdateDto beerUpdateDto){
             var validationResult = await _beerUpdateValidator.ValidateAsync(beerUpdateDto);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors); 
+            
+            if(!_beerService.Validate(beerUpdateDto)) return BadRequest(beerUpdateDto);
             
             var beerDto = await _beerService.Update(id, beerUpdateDto);
 

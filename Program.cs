@@ -18,7 +18,7 @@ builder.Services.AddSwaggerGen();
 
 //Injection string conection in dbcontext entity framework
 builder.Services.AddDbContext<StoreContext>(options => {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("StoreConnection"));
 });
 
 //Repository
