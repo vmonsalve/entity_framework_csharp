@@ -29,6 +29,4 @@ public class RoleRepository : IRepository<Role>
         =>  await _context.SaveChangesAsync();
     public IEnumerable<Role> Search(Func<Role, bool> filter)
         => _context.Roles.Where(filter).ToList();
-
-   
 }
