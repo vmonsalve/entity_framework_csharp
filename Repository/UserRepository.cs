@@ -1,42 +1,32 @@
 using System;
 using ENTITY_FRAMEWORK_EXAMPLE.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ENTITY_FRAMEWORK_EXAMPLE.Repository;
 
 public class UserRepository : IRepository<User>
 {
-    Task IRepository<User>.Add(User entity)
+    private StoreContext _context;
+    public UserRepository(StoreContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
+    public async Task<IEnumerable<User>> Get()
+        => await _context.Users.ToArrayAsync();
 
-    void IRepository<User>.Delete(User entity)
+    public async Task<User> GetById(int id)
+        => await _context.Users.FindAsync(id);
+    public async Task Add(User user)
+        => await _context.Users.AddAsync(user);
+    void IRepository<User>.Update(User user)
     {
-        throw new NotImplementedException();
+        _context.Users.Attach(user);
+        _context.Users.Entry(user).State = EntityState.Modified;
     }
-
-    Task<IEnumerable<User>> IRepository<User>.Get()
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<User> IRepository<User>.GetById(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task IRepository<User>.Save()
-    {
-        throw new NotImplementedException();
-    }
-
-    IEnumerable<User> IRepository<User>.Search(Func<User, bool> filter)
-    {
-        throw new NotImplementedException();
-    }
-
-    void IRepository<User>.Update(User entity)
-    {
-        throw new NotImplementedException();
-    }
+    void IRepository<User>.Delete(User user)
+        => _context.Users.Remove(user);
+    public async Task Save()
+        =>  await _context.SaveChangesAsync();
+    public IEnumerable<User> Search(Func<User, bool> filter)
+        => _context.Users.Where(filter).ToList();
 }
